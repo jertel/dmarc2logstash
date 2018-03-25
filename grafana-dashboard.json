@@ -16,7 +16,9 @@
   "gnetId": null,
   "graphTooltip": 0,
   "hideControls": false,
+  "id": 31,
   "links": [],
+  "refresh": "1h",
   "rows": [
     {
       "collapse": false,
@@ -1328,9 +1330,6 @@
   },
   "timepicker": {
     "refresh_intervals": [
-      "5s",
-      "10s",
-      "30s",
       "1m",
       "5m",
       "15m",
