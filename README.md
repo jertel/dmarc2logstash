@@ -116,4 +116,4 @@ dmarc2logstash was originally written for installation into a Kubernetes cluster
 
 ## Grafana Dashboard
 
-If you are using Grafana for dashboards, consider importing the included sample [DMARC dashboard](https://github.com/jertel/dmarc2logstash/grafana-dashboard.json) into your Grafana installation. This dashboard provides a simple view into the SPM and DKIM pass/fail counts by sending IP and receiving organization.
+If you are using Grafana for dashboards, consider importing the included sample [DMARC dashboard](https://github.com/jertel/dmarc2logstash/blob/master/grafana-dashboard.json) into your Grafana installation. This dashboard provides a simple view into the SPM and DKIM pass/fail counts by sending IP and receiving organization.
