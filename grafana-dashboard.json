@@ -16,7 +16,6 @@
   "gnetId": null,
   "graphTooltip": 0,
   "hideControls": false,
-  "id": 31,
   "links": [],
   "refresh": "1h",
   "rows": [
@@ -252,7 +251,7 @@
           ],
           "title": "Authentication Results (DKIM SPF)",
           "type": "grafana-piechart-panel",
-          "valueName": "current"
+          "valueName": "total"
         }
       ],
       "repeat": null,
@@ -853,7 +852,7 @@
           ],
           "title": "Policy (DKIM SPF)",
           "type": "grafana-piechart-panel",
-          "valueName": "current"
+          "valueName": "total"
         }
       ],
       "repeat": null,
@@ -1260,7 +1259,7 @@
           ],
           "title": "Policy Settings (disposition, p, pct)",
           "type": "grafana-piechart-panel",
-          "valueName": "current"
+          "valueName": "total"
         }
       ],
       "repeat": null,
@@ -1352,5 +1351,5 @@
   },
   "timezone": "",
   "title": "DMARC",
-  "version": 6
+  "version": 1
 }

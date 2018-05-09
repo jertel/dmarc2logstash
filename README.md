@@ -112,7 +112,7 @@ docker run --rm -v /host/path/logs:/logs -v /host/path/dmarc2logstash.json:/opt/
 
 ## Kubernetes
 
-dmarc2logstash was originally written for installation into a Kubernetes cluster via Helm. A pull-request to the official Kubernetes [chart repository](https://github.com/kubernetes/charts) is in progress.
+dmarc2logstash exists in the official Kubernetes Helm repository, and can be installed into an existing Kubernetes cluster by the following the [dmarc2logstash Helm instructions](https://github.com/kubernetes/charts/tree/master/stable/dmarc2logstash).
 
 ## Grafana Dashboard
 
