@@ -61,21 +61,24 @@ def parseAttachments(jsonOutputFile, msg):
     name = part.get_filename()
     if name is not None:
       xmls = []
-      data = part.get_payload(decode=True)
-      if part.get_content_type() == "application/gzip" or name.endswith(".gzip") or name.endswith(".gz"):
-        log.info("Decompressing gzip data")
-        xmls.append(gzip.GzipFile(fileobj=io.BytesIO(data)).read())
-      elif part.get_content_type() == "application/zip" or name.endswith(".zip"):
-        log.info("Decompressing zip data")
-        zfile = zipfile.ZipFile(io.BytesIO(data))
-        for name in zfile.namelist():
-          if fnmatch.fnmatch(name, '*.xml'):
-            xmls.append(zfile.read(name))
-      else:
-        xmls.append(data)
-      for xml in xmls:
-        if parse(jsonOutputFile, str(xml), msg.get('subject')):
-          success = success + 1
+      try:
+        data = part.get_payload(decode=True)
+        if part.get_content_type() == "application/gzip" or name.endswith(".gzip") or name.endswith(".gz"):
+          log.info("Decompressing gzip data")
+          xmls.append(gzip.GzipFile(fileobj=io.BytesIO(data)).read())
+        elif part.get_content_type() == "application/zip" or name.endswith(".zip"):
+          log.info("Decompressing zip data")
+          zfile = zipfile.ZipFile(io.BytesIO(data))
+          for name in zfile.namelist():
+            if fnmatch.fnmatch(name, '*.xml'):
+              xmls.append(zfile.read(name))
+        else:
+          xmls.append(data)
+        for xml in xmls:
+          if parse(jsonOutputFile, str(xml), msg.get('subject')):
+            success = success + 1
+      except Exception as e:
+        log.warn("Unable to parse attachment; name=\"%s\"; reason=\"%s\"" % (name, str(e)))
   return success
 
 def parse(jsonOutputFile, xml, subject):
