@@ -183,17 +183,19 @@ def main():
     config['json_output_file'] = 'dmarc.json'
   if config.get('sleep_seconds') is None:
     config['sleep_seconds'] = 300
+  if config.get('socket_timeout_seconds') is None:
+    config['socket_timeout_seconds'] = 30
 
   server = os.environ.get('POP3_SERVER', config.get('pop3_server'))
   username = os.environ.get('POP3_USERNAME', config.get('pop3_username'))
   password = os.environ.get('POP3_PASSWORD', config.get('pop3_password'))
   sleepSec = os.environ.get('SLEEP_SECONDS', config.get('sleep_seconds'))
   jsonOutputFile = os.environ.get('JSON_OUTPUT_FILE', config.get('json_output_file'))
-  timeout = os.environ.get('SOCKET_TIMEOUT_SECONDS', config.get('socket_timeout_SECONDS'))
+  timeout = os.environ.get('SOCKET_TIMEOUT_SECONDS', config.get('socket_timeout_seconds'))
   shouldDelete = os.environ.get('DELETE_MESSAGES', config.get('delete_messages'))
 
-  if not server or not username or not password:
-    log.error("POP3_SERVER, POP3_USERNAME, POP3_PASSWORD, and SLEEP_SECONDS are required environment variables")
+  if not server or not username or not password or not shouldDelete:
+    log.error("POP3_SERVER, POP3_USERNAME, POP3_PASSWORD, and DELETE_MESSAGES are required environment variables")
   else:
     start(server, username, password, int(sleepSec), jsonOutputFile, float(timeout), int(shouldDelete))
 

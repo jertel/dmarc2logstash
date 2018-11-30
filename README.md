@@ -76,6 +76,8 @@ An example configuration file is shown below, followed by descriptions of each s
   "pop3_password": "ThisIsThePassword!",
   "sleep_seconds": 600,
   "json_output_file": "/log/dmarc.json",
+  "socket_timeout_seconds": 10,
+  "delete_messages": 1
 }
 ```
 
@@ -86,6 +88,8 @@ An example configuration file is shown below, followed by descriptions of each s
 | pop3_password | true     | POP3 account password
 | sleep_seconds | false    | Number of seconds to pause in between POP3 mail check; defaults to 300 (5 minutes)
 | json_output_file | false | Output file where the JSON records will be written; defaults to dmarc.log in the current working directory.
+| socket_timeout_seconds | false | Number of seconds (can be a decimal value) before timing out the POP3 connection. Defaults to 30 seconds.
+| delete_messages | true | If set to 1, the messages will be deleted from the inbox after successful parsing. If set to 0, the messages will not be deleted (useful for debugging)
 
 ## Environment Variables
 
@@ -99,6 +103,8 @@ The following environment variables are used as inputs for sensitive information
 | POP3_DEBUG_LEVEL | false | Set to 2 for detailed POP3 logging to help diagnose problems with POP3 servers. This variable is only supported through the environment variable, not via the JSON configuration file.
 | SLEEP_SECONDS | false    | Number of seconds to pause in between POP3 mail check; defaults to 300 (5 minutes)
 | JSON_OUTPUT_FILE | false | Output file where the JSON records will be written; defaults to dmarc.log in the current working directory.
+| SOCKET_TIMEOUT_SECONDS | false | Number of seconds (can be a decimal value) before timing out the POP3 connection. Defaults to 30 seconds.
+| DELETE_MESSAGES | true | If set to 1, the messages will be deleted from the inbox after successful parsing. If set to 0, the messages will not be deleted (useful for debugging)
 
 ## Docker
 
