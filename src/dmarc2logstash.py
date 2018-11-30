@@ -25,19 +25,20 @@ def setupLogging():
   log.addHandler(ch)
   log.setLevel(logging.INFO)
 
-def connect(server, username, password):
+def connect(server, username, password, timeout):
   debugLevel = os.environ.get('POP3_DEBUG_LEVEL', "0")
   log.info("Connecting to POP3 server; server=%s; username=%s; debugLevel=%s" % (server, username, debugLevel))
   conn = poplib.POP3_SSL(server)
+  conn.sock.settimeout(timeout)
   conn.set_debuglevel(int(debugLevel))
   conn.user(username)
   conn.pass_(password)
   return conn
 
-def download(server, username, password, jsonOutputFile):
+def download(server, username, password, jsonOutputFile, timeout, shouldDelete):
   success = 0
   failure = 0
-  conn = connect(server, username, password)
+  conn = connect(server, username, password, timeout)
   messages = conn.list()[1]
   log.info("Connected to POP3 server; newMessages=%d" % (len(messages)))
   for i in range(1, len(messages) + 1):
@@ -46,8 +47,9 @@ def download(server, username, password, jsonOutputFile):
     log.info("Reading message; messageIdx=%d; messageSubject=\"%s\"; messageSender=\"%s\"" % (i, msg.get('subject'), msg.get('from')))
     successCount = parseAttachments(jsonOutputFile, msg)
     if successCount > 0:
-      log.info("Deleting successfully parsed DMARC report email; messageIdx=%d; messageSubject=\"%s\"; messageSender=\"%s\"" % (i, msg.get('subject'), msg.get('from')))
-      conn.dele(i) 
+      if shouldDelete == 1:
+        log.info("Deleting successfully parsed DMARC report email; messageIdx=%d; messageSubject=\"%s\"; messageSender=\"%s\"" % (i, msg.get('subject'), msg.get('from')))
+        conn.dele(i) 
       success = success + successCount
     else:
       log.info("Preserving email message since it is not a DMARC report; messageIdx=%d; messageSubject=\"%s\"; messageSender=\"%s\"" % (i, msg.get('subject'), msg.get('from')))
@@ -81,6 +83,13 @@ def parseAttachments(jsonOutputFile, msg):
         log.warn("Unable to parse attachment; name=\"%s\"; reason=\"%s\"" % (name, str(e)))
   return success
 
+def parseItem(element, tag):
+  value = ""
+  item = element.find(tag)
+  if item is not None:
+    value = item.text
+  return value
+
 def parse(jsonOutputFile, xml, subject):
   if xml.find("report_metadata") > 0:
     root = ET.fromstring(xml)
@@ -93,46 +102,42 @@ def parse(jsonOutputFile, xml, subject):
       report['submitter'] = "unknown"
     metaData = root.find('report_metadata')
     if metaData is not None:
-      report['org_name'] = metaData.find('org_name').text
-      report['org_email'] = metaData.find('email').text
-      report['id'] = metaData.find('report_id').text
+      report['org_name'] = parseItem(metaData, 'org_name')
+      report['org_email'] = parseItem(metaData, 'email')
+      report['id'] = parseItem(metaData, 'report_id')
       report['date_start'] = datetime.fromtimestamp(int(metaData.find('date_range').find('begin').text))
       report['date_end'] = datetime.fromtimestamp(int(metaData.find('date_range').find('end').text))
       policyPub = root.find('policy_published')
       if policyPub is not None:
-        report['policy_domain'] = policyPub.find('domain').text
-        report['policy_dkim'] = policyPub.find('adkim').text
-        report['policy_spf'] = policyPub.find('aspf').text
-        report['policy_p'] = policyPub.find('p').text
-        report['policy_pct'] = float(policyPub.find('pct').text)
+        report['policy_domain'] = parseItem(policyPub, 'domain')
+        report['policy_dkim'] = parseItem(policyPub, 'adkim')
+        report['policy_spf'] = parseItem(policyPub, 'aspf')
+        report['policy_p'] = parseItem(policyPub, 'p')
+        report['policy_pct'] = parseItem(policyPub, 'pct')
       for child in root.iter("record"):
         record = dict(report)
         row = child.find('row')
         if row is not None:
-          record['source_ip'] = row.find('source_ip').text
-          record['count'] = int(row.find('count').text)
+          record['source_ip'] = parseItem(row, 'source_ip')
+          record['count'] = int(parseItem(row, 'count'))
           policy = row.find('policy_evaluated')
           if policy is not None:
-            record['policy_disposition'] = policy.find('disposition').text
-            dkim = policy.find('dkim')
-            if dkim is not None:
-              record['policy_dkim'] = dkim.text
-            spf = policy.find('spf')
-            if spf is not None:
-              record['policy_spf'] = spf.text
+            record['policy_disposition'] = parseItem(policy, 'disposition')
+            record['policy_dkim'] = parseItem(policy, 'dkim')
+            record['policy_spf'] = parseItem(policy, 'spf')
         identifiers = child.find('identifiers')
         if identifiers is not None:
-          record['identifier_header_from'] = identifiers.find('header_from').text
+          record['identifier_header_from'] = parseItem(identifiers, 'header_from')
         authResults = child.find('auth_results')
         if authResults is not None:
           dkim = authResults.find('dkim')
           if dkim is not None:
-            record['auth_dkim_domain'] = dkim.find('domain').text
-            record['auth_dkim_result'] = dkim.find('result').text
+            record['auth_dkim_domain'] = parseItem(dkim, 'domain')
+            record['auth_dkim_result'] = parseItem(dkim, 'result')
           spf = authResults.find('spf')
           if spf is not None:
-            record['auth_spf_domain'] = spf.find('domain').text
-            record['auth_spf_result'] = spf.find('result').text
+            record['auth_spf_domain'] = parseItem(spf, 'domain')
+            record['auth_spf_result'] = parseItem(spf, 'result')
         records.append(record)
 
       log.info("Writing JSON records to log file")
@@ -152,10 +157,10 @@ def json_serial(obj):
     return obj.isoformat()
   raise TypeError ("Type %s not serializable" % type(obj))
 
-def start(server, username, password, sleepSec, jsonOutputFile):
-  log.info("Starting DMARC to Logstash service; sleepSec=%d; jsonOutputFile=%s" % (sleepSec, jsonOutputFile))
+def start(server, username, password, sleepSec, jsonOutputFile, timeout, shouldDelete):
+  log.info("Starting DMARC to Logstash service; sleepSec=%d; jsonOutputFile=%s; shouldDelete=%d" % (sleepSec, jsonOutputFile, shouldDelete))
   while True:
-    download(server, username, password, jsonOutputFile)
+    download(server, username, password, jsonOutputFile, timeout, shouldDelete)
     log.info("Sleeping until next poll; sleepSec=%d" % (sleepSec))
     time.sleep(sleepSec)
 
@@ -184,11 +189,13 @@ def main():
   password = os.environ.get('POP3_PASSWORD', config.get('pop3_password'))
   sleepSec = os.environ.get('SLEEP_SECONDS', config.get('sleep_seconds'))
   jsonOutputFile = os.environ.get('JSON_OUTPUT_FILE', config.get('json_output_file'))
+  timeout = os.environ.get('SOCKET_TIMEOUT_SECONDS', config.get('socket_timeout_SECONDS'))
+  shouldDelete = os.environ.get('DELETE_MESSAGES', config.get('delete_messages'))
 
   if not server or not username or not password:
     log.error("POP3_SERVER, POP3_USERNAME, POP3_PASSWORD, and SLEEP_SECONDS are required environment variables")
   else:
-    start(server, username, password, int(sleepSec), jsonOutputFile)
+    start(server, username, password, int(sleepSec), jsonOutputFile, float(timeout), int(shouldDelete))
 
 if __name__ == '__main__':
   sys.exit(main())
