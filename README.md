@@ -144,10 +144,10 @@ The command deploys dmarc2logstash on the Kubernetes cluster in the default conf
 
 ### Uninstalling the Chart
 
-To uninstall/delete the my-release deployment:
+To uninstall/delete the dmarc2logstash deployment:
 
 ```console
-helm delete my-release --purge
+helm delete dmarc2logstash --purge
 ```
 
 The command removes all the Kubernetes components associated with the chart and deletes the release.
