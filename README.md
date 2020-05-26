@@ -126,7 +126,7 @@ A dmarc2logstash chart is available in the Codesim LLC Helm repository, and can 
 
 ### Installing the Chart
 
-This chart requests a newer version of Helm, at least 1.10 or higher.
+This chart requests a newer version of Helm, at least 3.2.1 or higher.
 
 Add the Codesim repository to your Helm configuration:
 
