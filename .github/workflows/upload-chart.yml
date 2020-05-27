@@ -10,9 +10,6 @@ jobs:
     - uses: actions/checkout@v2
     - name: Run a multi-line script
       run: |
-        mkdir -p /tmp/out
         sudo snap install helm --classic
-        helm package chart/dmarc2logstash -d /tmp/out
         helm plugin install https://github.com/chartmuseum/helm-push
-        helm repo add codesim cm://helm.codesim.com
-        helm push -f /tmp/out/* codesim
+        helm push chart/dmarc2logstash https://charts.banzaicloud.io/gh/Codesim-LLC
