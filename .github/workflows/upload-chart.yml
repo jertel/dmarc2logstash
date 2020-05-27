@@ -24,7 +24,7 @@ jobs:
     - name: Run a multi-line script
       run: |
         mkdir -p /tmp/out
-        snap install helm
+        sudo snap install helm
         helm package chart/dmarc2logstash -d /tmp/out
         helm plugin install https://github.com/chartmuseum/helm-push
         helm repo add codesim cm://helm.codesim.com
