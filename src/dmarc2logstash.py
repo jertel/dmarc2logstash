@@ -10,6 +10,7 @@ import time
 import logging
 import re
 import signal
+import socket
 import sys
 import poplib
 from email import parser
@@ -119,6 +120,7 @@ def parse(jsonOutputFile, xml, subject):
         row = child.find('row')
         if row is not None:
           record['source_ip'] = parseItem(row, 'source_ip')
+          record['source_domain'] = lookupHostFromIp(record['source_ip'])
           record['count'] = int(parseItem(row, 'count'))
           policy = row.find('policy_evaluated')
           if policy is not None:
@@ -151,6 +153,17 @@ def parse(jsonOutputFile, xml, subject):
   else:
     log.warn("Skipping attachment that does not appear to conform to a DMARC aggregate report")
   return False
+
+def lookupHostFromIp(ip):
+  host = ip
+  hosts = socket.gethostbyaddr(ip)
+  if len(hosts) > 0:
+    host = hosts[0]
+    segments = host.split('.')
+    if len(segments) > 2:
+      host = segments[-2] + "." + segments[-1]
+
+  return host
 
 def json_serial(obj):
   if isinstance(obj, (datetime, date)):
