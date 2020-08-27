@@ -44,7 +44,10 @@ def download(server, username, password, jsonOutputFile, timeout, shouldDelete):
   log.info("Connected to POP3 server; newMessages=%d" % (len(messages)))
   for i in range(1, len(messages) + 1):
     txt = conn.retr(i)[1]
-    msg = parser.Parser().parsestr("\n".join(txt))
+    raw = ""
+    for j in range(len(txt)):
+      raw = raw + txt[j].decode() + "\n"
+    msg = parser.Parser().parsestr(raw)
     log.info("Reading message; messageIdx=%d; messageSubject=\"%s\"; messageSender=\"%s\"" % (i, msg.get('subject'), msg.get('from')))
     successCount = parseAttachments(jsonOutputFile, msg)
     if successCount > 0:
@@ -78,10 +81,10 @@ def parseAttachments(jsonOutputFile, msg):
         else:
           xmls.append(data)
         for xml in xmls:
-          if parse(jsonOutputFile, str(xml), msg.get('subject')):
+          if parse(jsonOutputFile, str(xml.decode("utf-8")), msg.get('subject')):
             success = success + 1
       except Exception as e:
-        log.warn("Unable to parse attachment; name=\"%s\"; reason=\"%s\"" % (name, str(e)))
+        log.warning("Unable to parse attachment; name=\"%s\"; reason=\"%s\"" % (name, str(e)))
   return success
 
 def parseItem(element, tag):
@@ -97,7 +100,7 @@ def parse(jsonOutputFile, xml, subject):
     records = []
     report = {}
     match = re.search('.*?Submitter:\\s?([^\\s]*)\\s?', subject)
-    if match is not None and match.groups > 0:
+    if match is not None and len(match.groups()) > 0:
       report['submitter'] = match.group(1)
     else:
       report['submitter'] = "unknown"
@@ -149,9 +152,9 @@ def parse(jsonOutputFile, xml, subject):
           dmarcLog.write(output + "\n")
       return True
     else:
-      log.warn("Invalid feedback; missing report_metadata element")
+      log.warning("Invalid feedback; missing report_metadata element")
   else:
-    log.warn("Skipping attachment that does not appear to conform to a DMARC aggregate report")
+    log.warning("Skipping attachment that does not appear to conform to a DMARC aggregate report")
   return False
 
 def lookupHostFromIp(ip):
