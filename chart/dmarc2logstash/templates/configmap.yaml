@@ -9,8 +9,7 @@ metadata:
     release: {{ .Release.Name }}
 data:
   filebeat.yml: |
-    filebeat.registry_file: /tmp/filebeat_registry
-    filebeat.prospectors:
+    filebeat.inputs:
     - type: log
       enabled: true
       paths:
