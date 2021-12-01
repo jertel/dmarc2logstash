@@ -1,19 +1,19 @@
 # Helm Chart for Kubernetes
 
-A dmarc2logstash chart is available in the Codesim LLC Helm repository, and can be installed into an existing Kubernetes cluster by following the instructions below.
+A dmarc2logstash chart is available, and can be installed into an existing Kubernetes cluster by following the instructions below.
 
 ## Installing the Chart
 
-Add the Codesim repository to your Helm configuration:
+Add the repository to your Helm configuration:
 
 ```console
-helm repo add jertel https://helm.jertel.com
+helm repo add dmarc2logstash https://jertel.github.io/dmarc2logstash/
 ```
 
 Next, install the chart with a release name, such as _dmarc2logstash_:
 
 ```console
-helm install dmarc2logstash jertel/dmarc2logstash
+helm install dmarc2logstash dmarc2logstash/dmarc2logstash
 ```
 
 The command deploys dmarc2logstash on the Kubernetes cluster in the default configuration. The [configuration](#configuration) section lists the parameters that can be configured during installation. The [secrets](#secrets) section lists the required Kubernetes secrets.
