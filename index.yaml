@@ -1,0 +1,20 @@
+apiVersion: v1
+entries:
+  dmarc2logstash:
+  - apiVersion: v1
+    appVersion: 1.5.2
+    created: "2021-12-01T14:01:26.833416756Z"
+    description: Provides a POP3-polled DMARC XML report injector into Elasticsearch
+      via Logstash and Filebeat
+    digest: 2922d8a33d4520f04c4b8ed282e4d7e2f966de32d3cfd83624c815f342e39064
+    home: https://github.com/jertel/dmarc2logstash
+    maintainers:
+    - email: jertel@codesim.com
+      name: jertel
+    name: dmarc2logstash
+    sources:
+    - https://github.com/jertel/dmarc2logstash
+    urls:
+    - https://github.com/jertel/dmarc2logstash/releases/download/dmarc2logstash-1.5.2/dmarc2logstash-1.5.2.tgz
+    version: 1.5.2
+generated: "2021-12-01T14:01:26.833424456Z"
