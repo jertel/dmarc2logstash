@@ -77,7 +77,8 @@ An example configuration file is shown below, followed by descriptions of each s
   "sleep_seconds": 600,
   "json_output_file": "/log/dmarc.json",
   "socket_timeout_seconds": 10,
-  "delete_messages": 1
+  "delete_messages": 1,
+  "delete_failures": 0
 }
 ```
 
@@ -90,6 +91,7 @@ An example configuration file is shown below, followed by descriptions of each s
 | json_output_file | false | Output file where the JSON records will be written; defaults to dmarc.log in the current working directory.
 | socket_timeout_seconds | false | Number of seconds (can be a decimal value) before timing out the POP3 connection. Defaults to 30 seconds.
 | delete_messages | true | If set to 1, the messages will be deleted from the inbox after successful parsing. If set to 0, the messages will not be deleted (useful for debugging)
+| delete_failures | false | If set to 1, invalid email messages will be deleted from the inbox. If set to 0, the failed messages will not be deleted (useful for debugging)
 
 ## Environment Variables
 
@@ -105,6 +107,7 @@ The following environment variables are used as inputs for sensitive information
 | JSON_OUTPUT_FILE | false | Output file where the JSON records will be written; defaults to dmarc.log in the current working directory.
 | SOCKET_TIMEOUT_SECONDS | false | Number of seconds (can be a decimal value) before timing out the POP3 connection. Defaults to 30 seconds.
 | DELETE_MESSAGES | true | If set to 1, the messages will be deleted from the inbox after successful parsing. If set to 0, the messages will not be deleted (useful for debugging)
+| DELETE_FAILURES | false | If set to 1, invalid email messages will be deleted from the inbox. If set to 0, the failed messages will not be deleted (useful for debugging)
 
 ## Docker
 

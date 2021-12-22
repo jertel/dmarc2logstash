@@ -36,7 +36,12 @@ def connect(server, username, password, timeout):
   conn.pass_(password)
   return conn
 
-def download(server, username, password, jsonOutputFile, timeout, shouldDelete):
+def isTrue(flag):
+  if flag == 1 or flag == "true" or flag == "True" or flag == "TRUE" or flag == True:
+    return True
+  return False
+
+def download(server, username, password, jsonOutputFile, timeout, shouldDelete, shouldDeleteFailures):
   success = 0
   failure = 0
   conn = connect(server, username, password, timeout)
@@ -51,13 +56,18 @@ def download(server, username, password, jsonOutputFile, timeout, shouldDelete):
     log.info("Reading message; messageIdx=%d; messageSubject=\"%s\"; messageSender=\"%s\"" % (i, msg.get('subject'), msg.get('from')))
     successCount = parseAttachments(jsonOutputFile, msg)
     if successCount > 0:
-      if shouldDelete == 1:
+      if isTrue(shouldDelete):
         log.info("Deleting successfully parsed DMARC report email; messageIdx=%d; messageSubject=\"%s\"; messageSender=\"%s\"" % (i, msg.get('subject'), msg.get('from')))
         conn.dele(i) 
       success = success + successCount
     else:
-      log.info("Preserving email message since it is not a DMARC report; messageIdx=%d; messageSubject=\"%s\"; messageSender=\"%s\"" % (i, msg.get('subject'), msg.get('from')))
       failure = failure + 1
+      if isTrue(shouldDeleteFailures):
+        log.info("Removing failed email message; it is not a DMARC report; messageIdx=%d; messageSubject=\"%s\"; messageSender=\"%s\"" % (i, msg.get('subject'), msg.get('from')))
+        conn.dele(i)
+      else:
+        log.info("Preserving failed email message; it is not a DMARC report; messageIdx=%d; messageSubject=\"%s\"; messageSender=\"%s\"" % (i, msg.get('subject'), msg.get('from')))
+
   log.info("DMARC Results; successfulDmarcEmailCount=%d; skippedEmailCount=%d" % (success, failure))
   conn.quit()
 
@@ -173,10 +183,10 @@ def json_serial(obj):
     return obj.isoformat()
   raise TypeError ("Type %s not serializable" % type(obj))
 
-def start(server, username, password, sleepSec, jsonOutputFile, timeout, shouldDelete):
-  log.info("Starting DMARC to Logstash service; sleepSec=%d; jsonOutputFile=%s; shouldDelete=%d" % (sleepSec, jsonOutputFile, shouldDelete))
+def start(server, username, password, sleepSec, jsonOutputFile, timeout, shouldDelete, shouldDeleteFailures):
+  log.info("Starting DMARC to Logstash service; sleepSec=%d; jsonOutputFile=%s; shouldDelete=%d; shouldDeleteFailures=%d" % (sleepSec, jsonOutputFile, shouldDelete, shouldDeleteFailures))
   while True:
-    download(server, username, password, jsonOutputFile, timeout, shouldDelete)
+    download(server, username, password, jsonOutputFile, timeout, shouldDelete, shouldDeleteFailures)
     log.info("Sleeping until next poll; sleepSec=%d" % (sleepSec))
     time.sleep(sleepSec)
 
@@ -209,11 +219,12 @@ def main():
   jsonOutputFile = os.environ.get('JSON_OUTPUT_FILE', config.get('json_output_file'))
   timeout = os.environ.get('SOCKET_TIMEOUT_SECONDS', config.get('socket_timeout_seconds'))
   shouldDelete = os.environ.get('DELETE_MESSAGES', config.get('delete_messages'))
+  shouldDeleteFailures = os.environ.get('DELETE_FAILURES', config.get('delete_failures'))
 
   if not server or not username or not password or not shouldDelete:
     log.error("POP3_SERVER, POP3_USERNAME, POP3_PASSWORD, and DELETE_MESSAGES are required environment variables")
   else:
-    start(server, username, password, int(sleepSec), jsonOutputFile, float(timeout), int(shouldDelete))
+    start(server, username, password, int(sleepSec), jsonOutputFile, float(timeout), shouldDelete, shouldDeleteFailures)
 
 if __name__ == '__main__':
   sys.exit(main())
