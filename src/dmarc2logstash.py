@@ -58,7 +58,7 @@ def download(server, username, password, jsonOutputFile, timeout, shouldDelete, 
       log.info("Reading message; messageIdx=%d; messageSubject=\"%s\"; messageSender=\"%s\"" % (i, msg.get('subject'), msg.get('from')))
       successCount = parseAttachments(jsonOutputFile, msg)
     except Exception as e:
-      log.warning("Unable to decode entry; index=\"%d\"; reason=\"%s\"" % (j, str(e)))
+      log.warning("Unable to decode entry; reason=\"%s\"" % (str(e)))
 
     if successCount > 0:
       if isTrue(shouldDelete):
