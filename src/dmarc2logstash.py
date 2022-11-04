@@ -50,11 +50,16 @@ def download(server, username, password, jsonOutputFile, timeout, shouldDelete, 
   for i in range(1, len(messages) + 1):
     txt = conn.retr(i)[1]
     raw = ""
-    for j in range(len(txt)):
-      raw = raw + txt[j].decode() + "\n"
-    msg = parser.Parser().parsestr(raw)
-    log.info("Reading message; messageIdx=%d; messageSubject=\"%s\"; messageSender=\"%s\"" % (i, msg.get('subject'), msg.get('from')))
-    successCount = parseAttachments(jsonOutputFile, msg)
+    successCount = 0
+    try:
+      for j in range(len(txt)):
+        raw = raw + txt[j].decode() + "\n"
+      msg = parser.Parser().parsestr(raw)
+      log.info("Reading message; messageIdx=%d; messageSubject=\"%s\"; messageSender=\"%s\"" % (i, msg.get('subject'), msg.get('from')))
+      successCount = parseAttachments(jsonOutputFile, msg)
+    except Exception as e:
+      log.warning("Unable to decode entry; index=\"%d\"; reason=\"%s\"" % (j, str(e)))
+
     if successCount > 0:
       if isTrue(shouldDelete):
         log.info("Deleting successfully parsed DMARC report email; messageIdx=%d; messageSubject=\"%s\"; messageSender=\"%s\"" % (i, msg.get('subject'), msg.get('from')))
