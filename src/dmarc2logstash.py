@@ -37,7 +37,7 @@ def connect(server, username, password, timeout):
   return conn
 
 def isTrue(flag):
-  if flag == 1 or flag == "true" or flag == "True" or flag == "TRUE" or flag == True:
+  if flag == 1 or flag == "true" or flag == "True" or flag == "TRUE" or flag == True or flag == "yes" or flag == "YES" or flag == "Yes":
     return True
   return False
 
@@ -189,7 +189,7 @@ def json_serial(obj):
   raise TypeError ("Type %s not serializable" % type(obj))
 
 def start(server, username, password, sleepSec, jsonOutputFile, timeout, shouldDelete, shouldDeleteFailures):
-  log.info("Starting DMARC to Logstash service; sleepSec=%d; jsonOutputFile=%s; shouldDelete=%s; shouldDeleteFailures=%s" % (sleepSec, jsonOutputFile, str(shouldDelete), str(shouldDeleteFailures)))
+  log.info("Starting DMARC to Logstash service; sleepSec=%d; jsonOutputFile=%s; shouldDelete=%s; shouldDeleteFailures=%s" % (sleepSec, jsonOutputFile, shouldDelete, shouldDeleteFailures))
   while True:
     download(server, username, password, jsonOutputFile, timeout, shouldDelete, shouldDeleteFailures)
     log.info("Sleeping until next poll; sleepSec=%d" % (sleepSec))
@@ -226,8 +226,8 @@ def main():
   shouldDelete = os.environ.get('DELETE_MESSAGES', config.get('delete_messages'))
   shouldDeleteFailures = os.environ.get('DELETE_FAILURES', config.get('delete_failures'))
 
-  if not server or not username or not password or not shouldDelete:
-    log.error("POP3_SERVER, POP3_USERNAME, POP3_PASSWORD, and DELETE_MESSAGES are required environment variables")
+  if not server or not username or not password:
+    log.error("POP3_SERVER, POP3_USERNAME, POP3_PASSWORD are required environment variables")
   else:
     start(server, username, password, int(sleepSec), jsonOutputFile, float(timeout), shouldDelete, shouldDeleteFailures)
 
