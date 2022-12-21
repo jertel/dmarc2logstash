@@ -68,10 +68,10 @@ def download(server, username, password, jsonOutputFile, timeout, shouldDelete, 
     else:
       failure = failure + 1
       if isTrue(shouldDeleteFailures):
-        log.info("Removing failed email message; it is not a DMARC report; messageIdx=%d; messageSubject=\"%s\"; messageSender=\"%s\"" % (i, msg.get('subject'), msg.get('from')))
+        log.info("Removing failed email message; it is not a DMARC report; messageIdx=%d" % (i))
         conn.dele(i)
       else:
-        log.info("Preserving failed email message; it is not a DMARC report; messageIdx=%d; messageSubject=\"%s\"; messageSender=\"%s\"" % (i, msg.get('subject'), msg.get('from')))
+        log.info("Preserving failed email message; it is not a DMARC report; messageIdx=%d" % (i))
 
   log.info("DMARC Results; successfulDmarcEmailCount=%d; skippedEmailCount=%d" % (success, failure))
   conn.quit()
