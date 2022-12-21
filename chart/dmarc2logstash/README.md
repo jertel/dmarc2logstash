@@ -33,7 +33,7 @@ The command removes all the Kubernetes components associated with the chart and 
 setting                           | description                                                                                                           | default
 ----------------------------------|-----------------------------------------------------------------------------------------------------------------------|----------
 dmarc2logstash.image.repository   | dmarc2logstash Docker image repository                                                                                | jertel/dmarc2logstash
-dmarc2logstash.image.tag          | dmarc2logstash image tag, typically the version, of the Docker image                                                  | 1.5.3
+dmarc2logstash.image.tag          | dmarc2logstash image tag, typically the version, of the Docker image                                                  | 1.5.4
 dmarc2logstash.image.pullPolicy   | dmarc2logstash Kubernetes image pull policy                                                                           | IfNotPresent
 delete_messages                   | Set to 1 to delete messages or 0 to preserve messages (useful for debugging) | 1
 filebeat.image.repository         | Elastic filebeat Docker image repository                                                                              | docker.elastic.co/beats/filebeat

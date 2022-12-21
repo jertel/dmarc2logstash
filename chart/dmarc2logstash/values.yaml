@@ -1,7 +1,7 @@
 dmarc2logstash:
   image:
     repository: jertel/dmarc2logstash
-    tag: 1.5.3
+    tag: 1.5.4
     pullPolicy: IfNotPresent
   deleteMessages: 1
   resources: {}
