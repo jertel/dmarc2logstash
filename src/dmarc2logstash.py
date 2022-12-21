@@ -189,7 +189,7 @@ def json_serial(obj):
   raise TypeError ("Type %s not serializable" % type(obj))
 
 def start(server, username, password, sleepSec, jsonOutputFile, timeout, shouldDelete, shouldDeleteFailures):
-  log.info("Starting DMARC to Logstash service; sleepSec=%d; jsonOutputFile=%s; shouldDelete=%d; shouldDeleteFailures=%d" % (sleepSec, jsonOutputFile, shouldDelete, shouldDeleteFailures))
+  log.info("Starting DMARC to Logstash service; sleepSec=%d; jsonOutputFile=%s; shouldDelete=%s; shouldDeleteFailures=%s" % (sleepSec, jsonOutputFile, str(shouldDelete), str(shouldDeleteFailures)))
   while True:
     download(server, username, password, jsonOutputFile, timeout, shouldDelete, shouldDeleteFailures)
     log.info("Sleeping until next poll; sleepSec=%d" % (sleepSec))
