@@ -188,10 +188,12 @@ def json_serial(obj):
     return obj.isoformat()
   raise TypeError ("Type %s not serializable" % type(obj))
 
-def start(server, username, password, sleepSec, jsonOutputFile, timeout, shouldDelete, shouldDeleteFailures):
+def start(server, username, password, sleepSec, jsonOutputFile, timeout, shouldDelete, shouldDeleteFailures, exit_after_poll):
   log.info("Starting DMARC to Logstash service; sleepSec=%d; jsonOutputFile=%s; shouldDelete=%s; shouldDeleteFailures=%s" % (sleepSec, jsonOutputFile, shouldDelete, shouldDeleteFailures))
   while True:
     download(server, username, password, jsonOutputFile, timeout, shouldDelete, shouldDeleteFailures)
+    if isTrue(exit_after_poll):
+      os._exit(0)
     log.info("Sleeping until next poll; sleepSec=%d" % (sleepSec))
     time.sleep(sleepSec)
 
@@ -216,6 +218,8 @@ def main():
     config['sleep_seconds'] = 300
   if config.get('socket_timeout_seconds') is None:
     config['socket_timeout_seconds'] = 30
+  if config.get('exit_after_poll') is None:
+    config['exit_after_poll'] = False
 
   server = os.environ.get('POP3_SERVER', config.get('pop3_server'))
   username = os.environ.get('POP3_USERNAME', config.get('pop3_username'))
@@ -225,11 +229,12 @@ def main():
   timeout = os.environ.get('SOCKET_TIMEOUT_SECONDS', config.get('socket_timeout_seconds'))
   shouldDelete = os.environ.get('DELETE_MESSAGES', config.get('delete_messages'))
   shouldDeleteFailures = os.environ.get('DELETE_FAILURES', config.get('delete_failures'))
+  exit_after_poll = os.environ.get('EXIT_AFTER_POLL', config.get('exit_after_poll'))
 
   if not server or not username or not password:
     log.error("POP3_SERVER, POP3_USERNAME, POP3_PASSWORD are required environment variables")
   else:
-    start(server, username, password, int(sleepSec), jsonOutputFile, float(timeout), shouldDelete, shouldDeleteFailures)
+    start(server, username, password, int(sleepSec), jsonOutputFile, float(timeout), shouldDelete, shouldDeleteFailures, exit_after_poll)
 
 if __name__ == '__main__':
   sys.exit(main())
