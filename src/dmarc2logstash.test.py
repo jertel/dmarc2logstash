@@ -8,6 +8,7 @@ class TestDmarc2Logstash(unittest.TestCase):
 
   def testIsTrue(self):
     self.assertTrue(dmarc2logstash.isTrue(1))
+    self.assertTrue(dmarc2logstash.isTrue("1"))
     self.assertTrue(dmarc2logstash.isTrue(True))
     self.assertTrue(dmarc2logstash.isTrue('true'))
     self.assertTrue(dmarc2logstash.isTrue('TRUE'))

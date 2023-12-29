@@ -33,7 +33,7 @@ The command removes all the Kubernetes components associated with the chart and 
 setting                           | description                                                                                                           | default
 ----------------------------------|-----------------------------------------------------------------------------------------------------------------------|----------
 dmarc2logstash.image.repository   | dmarc2logstash Docker image repository                                                                                | jertel/dmarc2logstash
-dmarc2logstash.image.tag          | dmarc2logstash image tag, typically the version, of the Docker image                                                  | 1.5.4
+dmarc2logstash.image.tag          | dmarc2logstash image tag, typically the version, of the Docker image                                                  | 1.6.0
 dmarc2logstash.image.pullPolicy   | dmarc2logstash Kubernetes image pull policy                                                                           | IfNotPresent
 delete_messages                   | Set to 1 to delete messages or 0 to preserve messages (useful for debugging) | 1
 filebeat.image.repository         | Elastic filebeat Docker image repository                                                                              | docker.elastic.co/beats/filebeat
@@ -42,7 +42,7 @@ filebeat.image.pullPolicy         | Elastic filebeat Kubernetes image pull polic
 filebeat.logstash.host            | Logstash service host; ex: logstash (this value must be provided)                                                     | ""
 filebeat.logstash.port            | Logstash service port                                                                                                 | 5000
 filebeat.logstash.sourceType      | Logstash source type will allow custom filtering via the Logstash configuration                                       | json-logs
-filebeat.logstash.index           | Elasticsearch index that will contain the new DMARC data (index will be created on-the-fly if doesn't exist)           | dmarc
+filebeat.logstash.index           | Elasticsearch index that will contain the new DMARC data (index will be created on-the-fly if doesn't exist)          | dmarc
 filebeat.logstash.timeout         | Seconds to wait before timing out the connection to logstash                                                          | 15
 
 ## Secrets
