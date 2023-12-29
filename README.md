@@ -92,6 +92,7 @@ An example configuration file is shown below, followed by descriptions of each s
 | socket_timeout_seconds | false | Number of seconds (can be a decimal value) before timing out the POP3 connection. Defaults to 30 seconds.
 | delete_messages | true | If set to 1, the messages will be deleted from the inbox after successful parsing. If set to 0, the messages will not be deleted (useful for debugging)
 | delete_failures | false | If set to 1, invalid email messages will be deleted from the inbox. If set to 0, the failed messages will not be deleted (useful for debugging)
+| exit_after_poll | false | If true, the process will exit after processing new messages. (useful for cron scheduling)
 
 ## Environment Variables
 
@@ -108,6 +109,7 @@ The following environment variables are used as inputs for sensitive information
 | SOCKET_TIMEOUT_SECONDS | false | Number of seconds (can be a decimal value) before timing out the POP3 connection. Defaults to 30 seconds.
 | DELETE_MESSAGES | true | If set to 1, the messages will be deleted from the inbox after successful parsing. If set to 0, the messages will not be deleted (useful for debugging)
 | DELETE_FAILURES | false | If set to 1, invalid email messages will be deleted from the inbox. If set to 0, the failed messages will not be deleted (useful for debugging)
+| EXIT_AFTER_POLL | false | If true, the process will exit after processing new messages. (useful for cron scheduling)
 
 ## Docker
 
