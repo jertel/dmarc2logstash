@@ -184,7 +184,7 @@ def lookupHostFromIp(ip):
   except socket.herror:
     pass
   except Exception as e:
-    print(f"An error occurred: {e}")
+    log.warning(f"Unable to lookup hostname for IP; ip={ip}; error={e}")
 
   return host
 
