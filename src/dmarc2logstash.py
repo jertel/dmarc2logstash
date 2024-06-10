@@ -174,12 +174,17 @@ def parse(jsonOutputFile, xml, subject):
 
 def lookupHostFromIp(ip):
   host = ip
-  hosts = socket.gethostbyaddr(ip)
-  if len(hosts) > 0:
-    host = hosts[0]
-    segments = host.split('.')
-    if len(segments) > 2:
-      host = segments[-2] + "." + segments[-1]
+  try:
+    hosts = socket.gethostbyaddr(ip)
+    if len(hosts) > 0:
+      host = hosts[0]
+      segments = host.split('.')
+      if len(segments) > 2:
+        host = segments[-2] + "." + segments[-1]
+  except socket.herror:
+    pass
+  except Exception as e:
+    print(f"An error occurred: {e}")
 
   return host
 
