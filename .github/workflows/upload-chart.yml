@@ -6,6 +6,11 @@ on:
 
 jobs:
   publish:
+    if: github.repository_owner == 'jertel'
+    
+    permissions:
+      contents: write # Required to create releases and push to the gh-pages branch
+      pages: write   # Required to write to the gh-pages branch
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
